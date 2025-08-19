@@ -21,7 +21,7 @@ export class AuthService {
 
       if (existingUser) {
         throw new HttpException(
-          'User with this email already exists',
+          'A User with this email already exists',
           HttpStatus.CONFLICT,
         );
       }
@@ -54,12 +54,12 @@ export class AuthService {
       if (error instanceof HttpException) {
         throw error;
       }
-
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      };
     }
+
   }
   async login(data: LoginDto): Promise<object> {
     try {
@@ -74,12 +74,12 @@ export class AuthService {
       const pwValid = await argon.verify(user.password, data.password);
       // check if password is valid
       if (!pwValid) {
-        throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+        throw new HttpException('Invalid credentials', HttpStatus.BAD_REQUEST);
       }
       // generate token
       const token = await this.signToken(user.id, user.email, {
-        expiresIn: "1d",
-        secret: JWT_SECRET
+        expiresIn: '5h',
+        secret: JWT_SECRET,
       });
       return {
         statusCode: HttpStatus.OK,
@@ -89,12 +89,15 @@ export class AuthService {
         },
       };
     } catch (error) {
+      if (error instanceof HttpException) {
+        throw error; 
+      }
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Internal server error',
-        data: {},
+        message: error.message,
       };
     }
+
   }
 
    signToken(userId: number, email: string, options?: object): Promise<string> {

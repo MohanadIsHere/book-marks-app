@@ -1,31 +1,60 @@
-import { HttpException, HttpStatus, Injectable, Req } from '@nestjs/common';
+import { Body, HttpException, HttpStatus, Injectable, Req } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import type { UpdateUserDto } from './dto';
+import * as argon from 'argon2';
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
   async getMe(@Req() req: any): Promise<object> {
-    const { userId } = req.user;
-
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-    });
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
-
     return {
       message: 'User Retrieved Successfully',
       data: {
         user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
+          id: req.user.id,
+          name: req.user.name,
+          email: req.user.email,
+          role: req.user.role,
+          createdAt: req.user.createdAt,
+          updatedAt: req.user.updatedAt,
         },
       },
     };
+  }
+
+  async updateUser(
+    @Req() req: any,
+    @Body() body: UpdateUserDto,
+  ): Promise<object> {
+    try {
+      if (!body || Object.keys(body).length === 0) {
+        throw new HttpException('No data provided', HttpStatus.BAD_REQUEST);
+      }
+      if (body.password) {
+        const hashed = await argon.hash(body.password);
+        body.password = hashed;
+      }
+      await this.prisma.user.update({
+        where: {
+          id: req.user.id,
+        },
+        data: {
+          ...body,
+        },
+      });
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'User updated successfully',
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      };
+    }
+
   }
 }
