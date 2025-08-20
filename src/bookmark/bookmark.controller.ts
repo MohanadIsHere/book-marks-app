@@ -2,13 +2,19 @@ import {
   Body,
   Controller,
   Get,
+  Patch,
   Post,
   Req,
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { BookmarkService } from './bookmark.service';
-import { CreateBookmarkSchema, type CreateBookmarkDto } from './dto';
+import {
+  CreateBookmarkSchema,
+  type updateBookmarkDto,
+  type CreateBookmarkDto,
+  UpdateBookmarkSchema,
+} from './dto';
 import { AuthGuard } from '@nestjs/passport';
 import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
 
@@ -25,13 +31,23 @@ export class BookmarkController {
     return this.bookmarkService.createBookmark(req, body);
   }
   @UseGuards(AuthGuard('jwt'))
-  @Get("/")
+  @Get('/')
   async getBookmarks(@Req() req: any): Promise<object> {
     return this.bookmarkService.getBookmarks(req);
   }
-  @Get("/:id")
+  @Get('/:id')
   @UseGuards(AuthGuard('jwt'))
   async getBookmark(@Req() req: any): Promise<object> {
-    return this.bookmarkService.getBookmark(req)
+    return this.bookmarkService.getBookmark(req);
+  }
+
+  @Patch('/:id')
+  @UseGuards(AuthGuard('jwt'))
+  @UsePipes(new ZodValidationPipe(UpdateBookmarkSchema))
+  async updateBookmark(
+    @Req() req: any,
+    @Body() body: updateBookmarkDto,
+  ): Promise<object> {
+    return this.bookmarkService.updateBookmark(req, body);
   }
 }

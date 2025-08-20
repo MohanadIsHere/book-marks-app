@@ -5,7 +5,7 @@ import {
   Injectable,
   Req,
 } from '@nestjs/common';
-import type { CreateBookmarkDto } from './dto';
+import type { CreateBookmarkDto, updateBookmarkDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -120,6 +120,56 @@ export class BookmarkService {
         data: {
           bookmark,
         },
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+        error,
+      };
+    }
+  }
+  async updateBookmark(
+    @Req() req: any,
+    @Body() body: updateBookmarkDto,
+  ): Promise<object> {
+    try {
+      if(Object.keys(body).length === 0 || !body) {
+        throw new HttpException('No data provided', HttpStatus.BAD_REQUEST);
+      }
+      const bookId = Number(req.params.id);
+      const { user } = req;
+      if (isNaN(bookId)) {
+        throw new HttpException('Invalid id', HttpStatus.BAD_REQUEST);
+      }
+      const bookmark = await this.prisma.bookMark.findUnique({
+        where: {
+          id: bookId,
+        },
+      });
+      if (!bookmark) {
+        throw new HttpException('Bookmark not found', HttpStatus.NOT_FOUND);
+      }
+      if (bookmark.userId !== user.id) {
+        throw new HttpException(
+          'You are not the owner of this bookmark',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+      await this.prisma.bookMark.update({
+        where: {
+          id: bookId,
+        },
+        data: {
+          ...body,
+        },
+      });
+
+      return {
+        message: "Bookmark updated successfully",
       };
     } catch (error) {
       if (error instanceof HttpException) {
