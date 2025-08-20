@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Patch,
   Post,
@@ -41,7 +42,7 @@ export class BookmarkController {
     return this.bookmarkService.getBookmark(req);
   }
 
-  @Patch('/:id')
+  @Patch(':id')
   @UseGuards(AuthGuard('jwt'))
   @UsePipes(new ZodValidationPipe(UpdateBookmarkSchema))
   async updateBookmark(
@@ -49,5 +50,20 @@ export class BookmarkController {
     @Body() body: updateBookmarkDto,
   ): Promise<object> {
     return this.bookmarkService.updateBookmark(req, body);
+  }
+  @Delete("user/:id")
+  @UseGuards(AuthGuard('jwt'))
+  async deleteBookmark(@Req() req: any): Promise<object> {
+    return this.bookmarkService.deleteBookmark(req);
+  }
+  @Delete("user")
+  @UseGuards(AuthGuard('jwt'))
+  async deleteAllUserBookmarks(@Req() req: any): Promise<object> {
+    return this.bookmarkService.deleteAllUserBookmarks(req);
+  }
+  @Delete("/")
+  @UseGuards(AuthGuard('jwt'))
+  async deleteAllBookmarks(@Req() req: any): Promise<object> {
+    return this.bookmarkService.deleteAllBookmarks(req);
   }
 }
