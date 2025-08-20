@@ -18,15 +18,20 @@ export class BookmarkController {
   @UseGuards(AuthGuard('jwt'))
   @Post('/create')
   @UsePipes(new ZodValidationPipe(CreateBookmarkSchema))
-  async createBookMark(
+  async createBookmark(
     @Req() req: any,
     @Body() body: CreateBookmarkDto,
   ): Promise<object> {
-    return this.bookmarkService.createBookMark(req, body);
+    return this.bookmarkService.createBookmark(req, body);
   }
   @UseGuards(AuthGuard('jwt'))
   @Get("/")
   async getBookmarks(@Req() req: any): Promise<object> {
-    return this.bookmarkService.getBookMarks(req);
+    return this.bookmarkService.getBookmarks(req);
+  }
+  @Get("/:id")
+  @UseGuards(AuthGuard('jwt'))
+  async getBookmark(@Req() req: any): Promise<object> {
+    return this.bookmarkService.getBookmark(req)
   }
 }

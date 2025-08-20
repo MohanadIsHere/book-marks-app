@@ -34,14 +34,15 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       throw new HttpException('Token revoked', HttpStatus.UNAUTHORIZED);
     }
 
-    const user = await this.prisma.user.findUnique({
+    const userData = await this.prisma.user.findUnique({
       where: { id: payload.sub },
     });
 
-    if (!user) {
+    if (!userData) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
+    
 
-    return { user, token };
+    return { ...userData, token };
   }
 }

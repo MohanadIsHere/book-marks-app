@@ -11,7 +11,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class BookmarkService {
   constructor(private prisma: PrismaService) {}
-  async createBookMark(
+  async createBookmark(
     @Req() req: any,
     @Body() body: CreateBookmarkDto,
   ): Promise<object> {
@@ -63,13 +63,13 @@ export class BookmarkService {
     }
   }
 
-  async getBookMarks(@Req() req: any): Promise<object> {
+  async getBookmarks(@Req() req: any): Promise<object> {
     try {
       const { id } = req.user;
       const bookmarks = await this.prisma.bookMark.findMany({
         where: {
           userId: id,
-        }
+        },
       });
       if (!bookmarks) {
         throw new HttpException(
@@ -81,6 +81,44 @@ export class BookmarkService {
         message: 'Bookmarks retrieved successfully',
         data: {
           bookmarks,
+        },
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+        error,
+      };
+    }
+  }
+  async getBookmark(@Req() req: any): Promise<object> {
+    try {
+      const id = Number(req.params.id);
+      if (isNaN(id)) {
+        throw new HttpException('Invalid id', HttpStatus.BAD_REQUEST);
+      }
+      const bookmark = await this.prisma.bookMark.findUnique({
+        where: {
+          id,
+        },
+      });
+      if (!bookmark) {
+        throw new HttpException('Bookmark not found', HttpStatus.NOT_FOUND);
+      }
+
+      if (bookmark.userId !== Number(req.user.id)) {
+        throw new HttpException(
+          'You are not the owner of this bookmark',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+      return {
+        message: 'Bookmark retrieved successfully',
+        data: {
+          bookmark,
         },
       };
     } catch (error) {
