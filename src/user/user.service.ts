@@ -57,6 +57,7 @@ export class UserService {
         },
         data: {
           ...body,
+          updatedAt: new Date(),
         },
       });
       return {
@@ -77,13 +78,12 @@ export class UserService {
 
   async deleteUser(@Req() req: any): Promise<object> {
     try {
-      
       await this.prisma.revokeToken.create({
         data: {
-          token: req.user.token
-        }
-      })
-     
+          token: req.user.token,
+        },
+      });
+
       await this.prisma.user.delete({
         where: {
           id: req.user.id,

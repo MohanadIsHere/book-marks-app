@@ -166,6 +166,7 @@ export class BookmarkService {
         },
         data: {
           ...body,
+          updatedAt: new Date(),
         },
       });
 
