@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { HttpCode, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
+  @HttpCode(200)
+  getHello(): object {
+    return {message: "Welcome To Bookmarks API 🚀 !"}
   }
 }
