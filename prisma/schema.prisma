@@ -1,3 +1,4 @@
+
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
@@ -12,6 +13,8 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+
 model User {
   id Int @id @default(autoincrement())
   name String 
@@ -22,16 +25,22 @@ model User {
   bookmarks BookMark[]
   role UserRole @default(user)
 }
+enum UserRole {
+  user
+  admin
+}
+model RevokeToken {
+  id Int @id @default(autoincrement())
+  token String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 model BookMark {
   id Int @id @default(autoincrement())
   title String
   description String?
   userId Int
   user User @relation(fields: [userId], references: [id])
-   createdAt DateTime @default(now())
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-enum UserRole {
-  user
-  admin
 }

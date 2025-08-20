@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Req } from '@nestjs/common';
 import type { LoginDto, RegisterDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2';
@@ -57,9 +57,9 @@ export class AuthService {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: error.message,
+        error,
       };
     }
-
   }
   async login(data: LoginDto): Promise<object> {
     try {
@@ -90,21 +90,43 @@ export class AuthService {
       };
     } catch (error) {
       if (error instanceof HttpException) {
-        throw error; 
+        throw error;
       }
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: error.message,
+        error,
       };
     }
-
+  }
+  async logout(@Req() req: any): Promise<object> {
+    try {
+      await this.prisma.revokeToken.create({
+        data: {
+          token: req.user.token
+        }
+      })
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'User logged out successfully',
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+        error,
+      };
+    }
   }
 
-   signToken(userId: number, email: string, options?: object): Promise<string> {
+  signToken(userId: number, email: string, options?: object): Promise<string> {
     const payload = {
       sub: userId,
       email,
     };
-    return this.jwt.signAsync({...payload}, options);
+    return this.jwt.signAsync({ ...payload }, options);
   }
 }
