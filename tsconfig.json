@@ -1,25 +1,68 @@
 {
   "compilerOptions": {
+    // Use Node.js module system with support for ESM and CJS
     "module": "nodenext",
+
+    // Resolve modules the same way Node.js does (ESM/CJS aware)
     "moduleResolution": "nodenext",
+
+    // Respect "exports" field in package.json
     "resolvePackageJsonExports": true,
+    // Allow default imports from CommonJS modules
     "esModuleInterop": true,
+
+    // Treat each file as a separate module
     "isolatedModules": true,
+
+    // Generate .d.ts type definition files
     "declaration": true,
+
+    // Remove comments from output JavaScript
     "removeComments": true,
+
+    // Emit metadata for decorators (needed for frameworks like NestJS)
     "emitDecoratorMetadata": true,
+
+    // Enable experimental decorators
     "experimentalDecorators": true,
+
+    // Allow default imports even if the module doesn’t have them
     "allowSyntheticDefaultImports": true,
+
+    // Set ECMAScript target version
     "target": "ES2023",
-    "sourceMap": true,
+
+    // Disable source maps (.map files)
+    "sourceMap": false,
+
+    // Output directory for compiled files
     "outDir": "./dist",
+
+    // Base directory to resolve non-relative imports
     "baseUrl": "./",
+
+    // Use incremental compilation for faster builds
     "incremental": true,
+
+    // Skip type checking of external libraries
     "skipLibCheck": true,
+
+    // Enforce null/undefined safety
     "strictNullChecks": true,
+
+    // Enable all strict type-checking options
+    "strict": true,
+
+    // Enforce consistent casing in file names
     "forceConsistentCasingInFileNames": true,
+
+    // Allow variables to have 'any' type
     "noImplicitAny": false,
+
+    // Disable strict checks for bind, call, and apply
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+
+    // Disallow fallthrough in switch statements
+    "noFallthroughCasesInSwitch": true
   }
 }

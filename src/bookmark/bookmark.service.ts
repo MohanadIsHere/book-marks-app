@@ -56,10 +56,13 @@ export class BookmarkService {
       if (error instanceof HttpException) {
         throw error;
       }
+
+      const err = error as Error;
+
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
-        error,
+        message: err.message,
+        error: err,
       };
     }
   }
@@ -88,10 +91,13 @@ export class BookmarkService {
       if (error instanceof HttpException) {
         throw error;
       }
+
+      const err = error as Error;
+
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
-        error,
+        message: err.message,
+        error: err,
       };
     }
   }
@@ -126,10 +132,13 @@ export class BookmarkService {
       if (error instanceof HttpException) {
         throw error;
       }
+
+      const err = error as Error;
+
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
-        error,
+        message: err.message,
+        error: err,
       };
     }
   }
@@ -177,10 +186,13 @@ export class BookmarkService {
       if (error instanceof HttpException) {
         throw error;
       }
+
+      const err = error as Error;
+
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
-        error,
+        message: err.message,
+        error: err,
       };
     }
   }
@@ -217,10 +229,13 @@ export class BookmarkService {
       if (error instanceof HttpException) {
         throw error;
       }
+
+      const err = error as Error;
+
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
-        error,
+        message: err.message,
+        error: err,
       };
     }
   }
@@ -247,17 +262,20 @@ export class BookmarkService {
       if (error instanceof HttpException) {
         throw error;
       }
+
+      const err = error as Error;
+
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
-        error,
+        message: err.message,
+        error: err,
       };
     }
   }
   async deleteAllBookmarks(@Req() req: any): Promise<object> {
     try {
       const { user } = req;
-      
+
       if (user.role !== UserRole.admin) {
         throw new HttpException(
           'You are not an admin to perform this action',
@@ -275,10 +293,11 @@ export class BookmarkService {
       if (error instanceof HttpException) {
         throw error;
       }
+      const err = error as Error;
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
-        error,
+        message: err.message,
+        error: err,
       };
     }
   }

@@ -4,6 +4,6 @@ import { HttpCode, Injectable } from '@nestjs/common';
 export class AppService {
   @HttpCode(200)
   getHello(): object {
-    return {message: "Welcome To Bookmarks API 🚀 !"}
+    return { message: 'Welcome To Bookmarks API 🚀 !' };
   }
 }

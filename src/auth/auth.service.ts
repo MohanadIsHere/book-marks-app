@@ -13,6 +13,7 @@ export class AuthService {
   ) {}
 
   async register(data: RegisterDto): Promise<object> {
+ 
     try {
       // check if user exists
       const existingUser = await this.prisma.user.findUnique({
@@ -54,12 +55,16 @@ export class AuthService {
       if (error instanceof HttpException) {
         throw error;
       }
+
+      const err = error as Error;
+
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
-        error,
+        message: err.message,
+        error: err,
       };
     }
+
   }
   async login(data: LoginDto): Promise<object> {
     try {
@@ -92,9 +97,10 @@ export class AuthService {
       if (error instanceof HttpException) {
         throw error;
       }
+      const err = error as Error;
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
+        message: err.message,
         error,
       };
     }
@@ -103,9 +109,9 @@ export class AuthService {
     try {
       await this.prisma.revokeToken.create({
         data: {
-          token: req.user.token
-        }
-      })
+          token: req.user.token,
+        },
+      });
       return {
         statusCode: HttpStatus.OK,
         message: 'User logged out successfully',
@@ -114,9 +120,10 @@ export class AuthService {
       if (error instanceof HttpException) {
         throw error;
       }
+      const err = error as Error;
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
+        message: err.message,
         error,
       };
     }

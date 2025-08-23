@@ -31,10 +31,13 @@ export class UserService {
       if (error instanceof HttpException) {
         throw error;
       }
+
+      const err = error as Error;
+
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
-        error,
+        message: err.message,
+        error: err,
       };
     }
   }
@@ -68,10 +71,13 @@ export class UserService {
       if (error instanceof HttpException) {
         throw error;
       }
+
+      const err = error as Error;
+
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
-        error,
+        message: err.message,
+        error: err,
       };
     }
   }
@@ -97,10 +103,13 @@ export class UserService {
       if (error instanceof HttpException) {
         throw error;
       }
+
+      const err = error as Error;
+
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
-        error,
+        message: err.message,
+        error: err,
       };
     }
   }
