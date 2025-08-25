@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Global, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Global, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JWT_SECRET } from 'src/config/env';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Request } from 'express';
@@ -31,7 +31,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
 
     if (revoked) {
-      throw new HttpException('Token revoked', HttpStatus.UNAUTHORIZED);
+      throw new UnauthorizedException('Token revoked');
     }
 
     const userData = await this.prisma.user.findUnique({

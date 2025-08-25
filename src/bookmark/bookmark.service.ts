@@ -1,9 +1,12 @@
 import {
+  BadRequestException,
   Body,
   HttpException,
   HttpStatus,
   Injectable,
+  NotFoundException,
   Req,
+  UnauthorizedException,
 } from '@nestjs/common';
 import type { CreateBookmarkDto, updateBookmarkDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -19,7 +22,7 @@ export class BookmarkService {
     try {
       const { user } = req;
       if (Object.values(body).length === 0) {
-        throw new HttpException('No data provided', HttpStatus.BAD_REQUEST);
+        throw new BadRequestException('No data provided');
       }
       const bookMark = await this.prisma.bookMark.create({
         data: {
@@ -76,10 +79,7 @@ export class BookmarkService {
         },
       });
       if (!bookmarks) {
-        throw new HttpException(
-          'No bookmarks found for this user',
-          HttpStatus.NOT_FOUND,
-        );
+        throw new NotFoundException('No bookmarks found for this user');
       }
       return {
         message: 'Bookmarks retrieved successfully',
@@ -105,7 +105,7 @@ export class BookmarkService {
     try {
       const id = Number(req.params.id);
       if (isNaN(id)) {
-        throw new HttpException('Invalid id', HttpStatus.BAD_REQUEST);
+        throw new BadRequestException('Invalid id');
       }
       const bookmark = await this.prisma.bookMark.findUnique({
         where: {
@@ -113,13 +113,12 @@ export class BookmarkService {
         },
       });
       if (!bookmark) {
-        throw new HttpException('Bookmark not found', HttpStatus.NOT_FOUND);
+        throw new NotFoundException('Bookmark not found');
       }
 
       if (bookmark.userId !== Number(req.user.id)) {
-        throw new HttpException(
+        throw new UnauthorizedException(
           'You are not the owner of this bookmark',
-          HttpStatus.UNAUTHORIZED,
         );
       }
       return {
@@ -148,12 +147,12 @@ export class BookmarkService {
   ): Promise<object> {
     try {
       if (Object.keys(body).length === 0 || !body) {
-        throw new HttpException('No data provided', HttpStatus.BAD_REQUEST);
+        throw new BadRequestException('No data provided');
       }
       const bookId = Number(req.params.id);
       const { user } = req;
       if (isNaN(bookId)) {
-        throw new HttpException('Invalid id', HttpStatus.BAD_REQUEST);
+        throw new BadRequestException('Invalid id');
       }
       const bookmark = await this.prisma.bookMark.findUnique({
         where: {
@@ -161,13 +160,10 @@ export class BookmarkService {
         },
       });
       if (!bookmark) {
-        throw new HttpException('Bookmark not found', HttpStatus.NOT_FOUND);
+        throw new BadRequestException('Bookmark not found');
       }
       if (bookmark.userId !== user.id) {
-        throw new HttpException(
-          'You are not the owner of this bookmark',
-          HttpStatus.UNAUTHORIZED,
-        );
+        throw new BadRequestException('You are not the owner of this bookmark');
       }
       await this.prisma.bookMark.update({
         where: {
@@ -201,7 +197,7 @@ export class BookmarkService {
       const bookId = Number(req.params.id);
       const { user } = req;
       if (isNaN(bookId)) {
-        throw new HttpException('Invalid id', HttpStatus.BAD_REQUEST);
+        throw new BadRequestException('Invalid id');
       }
       const bookmark = await this.prisma.bookMark.findUnique({
         where: {
@@ -209,13 +205,10 @@ export class BookmarkService {
         },
       });
       if (!bookmark) {
-        throw new HttpException('Bookmark not found', HttpStatus.NOT_FOUND);
+        throw new BadRequestException('Bookmark not found');
       }
       if (bookmark.userId !== user.id) {
-        throw new HttpException(
-          'You are not the owner of this bookmark',
-          HttpStatus.UNAUTHORIZED,
-        );
+        throw new BadRequestException('You are not the owner of this bookmark');
       }
       await this.prisma.bookMark.delete({
         where: {
@@ -249,10 +242,7 @@ export class BookmarkService {
         },
       });
       if (bookmarks.count === 0) {
-        throw new HttpException(
-          'No bookmarks found for this user',
-          HttpStatus.NOT_FOUND,
-        );
+        throw new BadRequestException('No bookmarks found for this user');
       }
 
       return {
@@ -277,14 +267,13 @@ export class BookmarkService {
       const { user } = req;
 
       if (user.role !== UserRole.admin) {
-        throw new HttpException(
+        throw new BadRequestException(
           'You are not an admin to perform this action',
-          HttpStatus.UNAUTHORIZED,
         );
       }
       const bookmarks = await this.prisma.bookMark.deleteMany();
       if (bookmarks.count === 0) {
-        throw new HttpException('No bookmarks found', HttpStatus.NOT_FOUND);
+        throw new BadRequestException('No bookmarks found');
       }
       return {
         message: 'All bookmarks deleted successfully',

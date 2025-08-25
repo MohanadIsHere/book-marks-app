@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Req } from '@nestjs/common';
+import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, Req } from '@nestjs/common';
 import type { LoginDto, RegisterDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2';
@@ -21,9 +21,8 @@ export class AuthService {
       });
 
       if (existingUser) {
-        throw new HttpException(
+        throw new ConflictException(
           'A User with this email already exists',
-          HttpStatus.CONFLICT,
         );
       }
 
@@ -79,7 +78,7 @@ export class AuthService {
       const pwValid = await argon.verify(user.password, data.password);
       // check if password is valid
       if (!pwValid) {
-        throw new HttpException('Invalid credentials', HttpStatus.BAD_REQUEST);
+        throw new BadRequestException('Invalid credentials');
       }
       // generate token
       const token = await this.signToken(user.id, user.email, {
